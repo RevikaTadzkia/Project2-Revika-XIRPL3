@@ -17,9 +17,9 @@ public class DataSiswa extends javax.swing.JFrame {
     /**
      * Creates new form DataSiswa
      */
-   public DataSiswa() {
+  public DataSiswa() {
         initComponents();
-       Connection koneksi = DatabaseConnection.getKoneksi("localhost", "3306", "root", "", "db_sekolah");
+      Connection koneksi = DatabaseConnection.getKoneksi("localhost", "3306", "root", "", "db_sekolah");
         showData();
     }
 
