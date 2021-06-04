@@ -80,6 +80,11 @@ public class DataSiswa extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tbl_siswa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbl_siswaMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbl_siswa);
 
         cmdRefresh.setText("Refresh");
@@ -94,6 +99,11 @@ public class DataSiswa extends javax.swing.JFrame {
         cmdEdit.setText("Ubah");
 
         cmdHapus.setText("Hapus");
+        cmdHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdHapusActionPerformed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setText("Tabel Siswa");
@@ -126,14 +136,14 @@ public class DataSiswa extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(11, 11, 11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmdRefresh)
-                    .addComponent(cmdTambah)
-                    .addComponent(cmdEdit)
-                    .addComponent(cmdHapus))
+                    .addComponent(cmdRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdTambah, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -142,7 +152,35 @@ public class DataSiswa extends javax.swing.JFrame {
 
     private void cmdTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdTambahActionPerformed
         // TODO add your handling code here:
+        MenambahkanData tambahData = new MenambahkanData(this, true);
+        tambahData.setVisible(true);
     }//GEN-LAST:event_cmdTambahActionPerformed
+    
+    int baris;
+    private void tbl_siswaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_siswaMouseClicked
+        // TODO add your handling code here:
+        baris = tbl_siswa.getSelectedRow();
+    }//GEN-LAST:event_tbl_siswaMouseClicked
+
+    private void cmdHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdHapusActionPerformed
+        // TODO add your handling code here:
+        String idWhoWantToBeDelete = tbl_siswa.getValueAt(baris, 0).toString();
+        try{
+            Statement stmt = koneksi.createStatement();
+            String query = "DELETE FROM t_siswa WHERE nis = '"+idWhoWantToBeDelete+"';";
+            int berhasil = stmt.executeUpdate(query);   
+            
+            if(berhasil == 1){
+                JOptionPane.showMessageDialog(null, "Data Berhasil Terhapus");
+                dtm.getDataVector().removeAllElements();
+                showData();
+            } else {
+               JOptionPane.showMessageDialog(null, "Data Tidak Berhasil Terhapus");
+            } 
+        } catch (SQLException ex){
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_cmdHapusActionPerformed
 
     /**
      * @param args the command line arguments
