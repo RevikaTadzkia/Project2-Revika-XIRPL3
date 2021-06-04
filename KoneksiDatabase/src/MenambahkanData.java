@@ -8,18 +8,33 @@
  *
  * @author HP
  */
+import java.awt.event.ComponentEvent;
 import java.sql.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 public class MenambahkanData extends javax.swing.JDialog {
-    Connection koneksi;
-    
+   Connection koneksi;
+    String action;
     /**
-     * Creates new form MenambahkanData
+     * Creates new form MenambahData
      */
-    public MenambahkanData(java.awt.Frame parent, boolean modal) {
+    public MenambahkanData(java.awt.Frame parent, boolean modal, String act, String nis) {
         super(parent, modal);
         initComponents();
         koneksi = DatabaseConnection.getKoneksi("localhost", "3306", "root", "", "db_sekolah");
+        
+        action = act;
+        if (action.equals("Edit")){
+            txtNIS.setEnabled(false);
+            showData(nis);
+        }
+    }
+
+    MenambahkanData(DataSiswa aThis, boolean b) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     public void SimpanData(){
@@ -45,7 +60,46 @@ public class MenambahkanData extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(null, "Terjadi Kesalahan pada Query");
         }
     }
-    
+ void showData(String nis){
+            try{
+                Statement stmt = koneksi.createStatement();
+                String query = "SELECT * FROM t_siswa WHERE nis = '"+nis+"'";
+                ResultSet rs = stmt.executeQuery(query);
+                
+                while(rs.next()){
+                    txtNIS.setText(rs.getString("nis"));
+                    txtNama.setText(rs.getString("nama"));
+                    cmbKelas.setSelectedItem(rs.getString("kelas"));
+                    cmbJurusan.setSelectedItem(rs.getString("jurusan"));
+                }
+            } catch (SQLException ex){
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Terjadi Kesalahan di Query");
+            }
+        }
+  public void EditData(){
+        String nis = txtNIS.getText();
+        String nama = txtNama.getText();
+        String kelas = cmbKelas.getSelectedItem().toString();
+        String jurusan = cmbJurusan.getSelectedItem().toString();
+        
+        try{
+            Statement stmt = koneksi.createStatement();
+            String query = "UPDATE t_siswa SET nama = '"+nama+"', kelas = '"+kelas+"', jurusan = '"+jurusan+"'"
+                    + "WHERE nis = '"+nis+"'";
+            System.out.println(query);
+            
+            int berhasil = stmt.executeUpdate(query);
+            if(berhasil == 1){
+                JOptionPane.showMessageDialog(null, "Data Berhasil Terubah");
+            } else {
+                JOptionPane.showMessageDialog(null, "Data Tidak BErhasil Terubah");
+            }
+        } catch (SQLException ex){
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Terjadi Kesalahan pada Query");
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -89,9 +143,25 @@ public class MenambahkanData extends javax.swing.JDialog {
             }
         });
 
+        txtNama.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNamaActionPerformed(evt);
+            }
+        });
+
         cmbKelas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbKelas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbKelasActionPerformed(evt);
+            }
+        });
 
         cmbJurusan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbJurusan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbJurusanActionPerformed(evt);
+            }
+        });
 
         btnSimpan.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnSimpan.setText("Simpan");
@@ -156,15 +226,166 @@ public class MenambahkanData extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+     private void intComponents() {
 
+       JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
+       JList<Object> jList1 = new javax.swing.JList<>();
+        txtNIS = new javax.swing.JTextField();
+       JSeparator jSeparator1 = new javax.swing.JSeparator();
+        lblTitle = new javax.swing.JLabel();
+       JLabel NIS = new javax.swing.JLabel();
+       JLabel Nama = new javax.swing.JLabel();
+        txtNama = new javax.swing.JTextField();
+       JLabel kelas = new javax.swing.JLabel();
+        cmbKelas = new javax.swing.JComboBox<>();
+       JLabel jurusan = new javax.swing.JLabel();
+        cmbJurusan = new javax.swing.JComboBox<>();
+        btnSimpan = new javax.swing.JButton();
+
+        jList1.setModel(new javax.swing.AbstractListModel<string>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(jList1);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                formComponentHidden(evt);
+            }
+
+           private void formComponentHidden(ComponentEvent evt) {
+               throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+           }
+        });
+
+        txtNIS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNISActionPerformed(evt);
+            }
+        });
+
+        lblTitle.setText("Tambah Data");
+
+        NIS.setText("NIS");
+
+        Nama.setText("Nama Lengkap");
+
+        txtNama.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNamaActionPerformed(evt);
+            }
+        });
+
+        kelas.setText("Kelas");
+
+        cmbKelas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbKelas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbKelasActionPerformed(evt);
+            }
+        });
+
+        jurusan.setText("Jurusan");
+
+        cmbJurusan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbJurusan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbJurusanActionPerformed(evt);
+            }
+        });
+
+        btnSimpan.setText("Simpan");
+        btnSimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblTitle)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(Nama)
+                                    .addComponent(kelas)
+                                    .addComponent(NIS)
+                                    .addComponent(jurusan))
+                                .addGap(21, 21, 21)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cmbJurusan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtNama)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(cmbKelas, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtNIS, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(0, 99, Short.MAX_VALUE)))))
+                        .addGap(53, 53, 53))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSimpan)
+                        .addGap(26, 26, 26))))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(9, 9, 9)
+                .addComponent(lblTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtNIS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(NIS))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Nama)
+                    .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(kelas)
+                    .addComponent(cmbKelas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jurusan)
+                    .addComponent(cmbJurusan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addComponent(btnSimpan)
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
     private void txtNISActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNISActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNISActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
+         if(action.equals("Edit")) EditData();
         SimpanData();
     }//GEN-LAST:event_btnSimpanActionPerformed
+
+    private void txtNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNamaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNamaActionPerformed
+
+    private void cmbKelasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbKelasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbKelasActionPerformed
+
+    private void cmbJurusanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbJurusanActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbJurusanActionPerformed
 
     /**
      * @param args the command line arguments
@@ -183,30 +404,18 @@ public class MenambahkanData extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MenambahkanData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MenambahData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MenambahkanData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MenambahData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MenambahkanData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MenambahData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MenambahkanData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MenambahData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                MenambahkanData dialog = new MenambahkanData(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSimpan;
@@ -220,4 +429,11 @@ public class MenambahkanData extends javax.swing.JDialog {
     private javax.swing.JTextField txtNIS;
     private javax.swing.JTextField txtNama;
     // End of variables declaration//GEN-END:variables
+    private static class JOptionPane {
+
+        private static void showMessageDialog(Object object, String terjadi_Kesalahan_pada_Database) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+    }
 }
